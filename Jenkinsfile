@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('beautykemefa-dockerhub')
-        TOMCAT_SERVER_LABEL = 'Node2'
+        TOMCAT_SERVER_LABEL = 'tomcat'
         CONTAINER_NAME = 'javaapp'
         DOCKER_IMAGE_NAME = 'beautykemefa/javawebapp'
     }
@@ -65,11 +65,11 @@ pipeline {
                 }
             }
         }
-    }
 
-    stage('Clean Up') {
-        steps {
-            sh 'docker logout'
+        stage('Clean Up') {
+            steps {
+                sh 'docker logout'
+            }
         }
     }
 
