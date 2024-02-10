@@ -1,4 +1,3 @@
-/*/
 resource "aws_instance" "javawebapp" {
   ami                    = "ami-05a36e1502605b4aa"
   instance_type          = "t2.micro"
@@ -48,7 +47,7 @@ resource "aws_instance" "tomcat" {
     Name = "tomcat"
   }
 }
-*/
+
 resource "aws_instance" "jenkins" {
   ami                    = "ami-05a36e1502605b4aa"
   instance_type          = "t2.micro"
