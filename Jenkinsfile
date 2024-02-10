@@ -1,5 +1,5 @@
 pipeline {
-    agent none  // Set to 'none' since you'll be specifying agents in each stage
+    agent any  // Set to 'none' since you'll be specifying agents in each stage
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('beautykemefa-dockerhub')
