@@ -12,7 +12,7 @@ pipeline {
         stage('SCM Checkout') {
             agent any
             steps {
-                git 'https://github.com/beaustar2/Project-1.git'
+                git branch: 'main', url: 'https://github.com/beaustar2/Project-1.git'
             }
         }
 
