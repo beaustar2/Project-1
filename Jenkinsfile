@@ -53,8 +53,8 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'docker-pwd', variable: 'dockerHubPwd')]) {
                     sh "sudo docker login -u beautykemefa -p ${dockerHubPwd}"
+                    sh 'sudo docker push beautykemefa/javawebapp:1.3.5'
                 }
-                sh 'sudo docker push beautykemefa/javawebapp:1.3.5'
             }
         }
 
