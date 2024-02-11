@@ -7,7 +7,7 @@ pipeline {
         stage('SCM Checkout') {
             steps {
                 script {
-                    git tool: 'Default', credentialsId: 'git-creds', url: 'https://github.com/beaustar2/Project-1.git', branch: 'main'
+                    git credentialsId: 'git-creds', url: 'https://github.com/beaustar2/Project-1.git', branch: 'main'
                 }
             }
         }
@@ -25,7 +25,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'sudo docker build -t beautykemefa/javawebapp:1.3.5 .'
+                    sh 'docker build -t beautykemefa/javawebapp:1.3.5 .'
                 }
             }
         }
@@ -34,25 +34,28 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'docker-pwd', variable: 'dockerHubPwd')]) {
-                        sh "sudo docker login -u beautykemefa -p ${dockerHubPwd}"
-                        sh 'sudo docker push beautykemefa/javawebapp:1.3.5'
+                        sh "docker login -u beautykemefa -p ${dockerHubPwd}"
+                        sh 'docker push beautykemefa/javawebapp:1.3.5'
                     }
                 }
             }
         }
 
         stage('Run Container on Tomcat-server') {
+            agent {
+                label 'tomcat'
+            }
             steps {
                 script {
                     // Generate a unique container name based on the timestamp and Jenkins build ID
                     def containerName = "javaApp-${env.BUILD_ID}-${new Date().format("yyyyMMdd-HHmmss")}"
 
                     // Stop and remove existing container if it exists
-                    sh "sudo docker stop ${containerName} || true"
-                    sh "sudo docker rm ${containerName} || true"
+                    sh "docker stop ${containerName} || true"
+                    sh "docker rm ${containerName} || true"
 
                     // Build and run the new container with the unique name
-                    def dockerRun = "sudo docker run -p 8080:8080 -d --name ${containerName} beautykemefa/javawebapp:1.3.5"
+                    def dockerRun = "docker run -p 8080:8080 -d --name ${containerName} beautykemefa/javawebapp:1.3.5"
                     sshagent(['javawebapp']) {
                         sh "ssh -o StrictHostKeyChecking=no centos@18.218.32.42 ${dockerRun}"
                     }
@@ -64,7 +67,7 @@ pipeline {
     post {
         always {
             script {
-                sh 'sudo docker system prune -af'
+                sh 'docker system prune -af'
             }
         }
     }
