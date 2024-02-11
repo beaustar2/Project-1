@@ -26,13 +26,16 @@ pipeline {
         }
 
         stage('Deploy Application') {
+            agent {
+                label 'tomcat'
+            }
             steps {
                 echo "Deploying the application"
                 script {
                     unstash "Project-1"
-                    sh"/home/centos/apache-tomcat-7.0.94/bin/startup.sh"
-                    sh "sudo rm -rf ~/apache*/webapps/*.war"
-                    sh "sudo mv target/*.war ~/apache*/webapps/"
+                    sh "/home/centos/apache-tomcat-7.0.94/bin/startup.sh"
+                    sh "sudo rm -rf /home/centos/apache-tomcat-7.0.94/webapps/*.war"
+                    sh "sudo mv target/*.war /home/centos/apache-tomcat-7.0.94/webapps/"
                     sh "sudo systemctl daemon-reload"
                     sh "/home/centos/apache-tomcat-7.0.94/bin/startup.sh"
                 }
