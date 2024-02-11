@@ -25,7 +25,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'sudo docker build -t beautykemefa/javawebapp:1.3.5 .'
+                    sh 'docker build -t beautykemefa/javawebapp:1.3.5 .'
                 }
             }
         }
@@ -34,8 +34,8 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'docker-pwd', variable: 'dockerHubPwd')]) {
-                        sh "sudo docker login -u beautykemefa -p ${dockerHubPwd}"
-                        sh 'sudo docker push beautykemefa/javawebapp:1.3.5'
+                        sh "docker login -u beautykemefa -p ${dockerHubPwd}"
+                        sh 'docker push beautykemefa/javawebapp:1.3.5'
                     }
                 }
             }
@@ -44,12 +44,15 @@ pipeline {
         stage('Run Container on Tomcat-server') {
             steps {
                 script {
-                    // Stop and remove existing container if it exists
-                    sh 'sudo docker stop javaApp || true'
-                    sh 'sudo docker rm javaApp || true'
+                    // Generate a unique container name based on the timestamp
+                    def containerName = "javaApp-${env.BUILD_ID}-${new Date().format("yyyyMMdd-HHmmss")}"
 
-                    // Build and run the new container
-                    def dockerRun = 'sudo docker run -p 8080:8080 -d --name javaApp beautykemefa/javawebapp:1.3.5'
+                    // Stop and remove existing container if it exists
+                    sh "docker stop ${containerName} || true"
+                    sh "docker rm ${containerName} || true"
+
+                    // Build and run the new container with the unique name
+                    def dockerRun = "docker run -p 8080:8080 -d --name ${containerName} beautykemefa/javawebapp:1.3.5"
                     sshagent(['javawebapp']) {
                         sh "ssh -o StrictHostKeyChecking=no centos@10.0.1.11 ${dockerRun}"
                     }
@@ -61,7 +64,7 @@ pipeline {
     post {
         always {
             script {
-                sh 'sudo docker system prune -af'
+                sh 'docker system prune -af'
             }
         }
     }
