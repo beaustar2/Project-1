@@ -1,32 +1,18 @@
 pipeline {
-<<<<<<< HEAD
     agent {
         label 'javawebapp'
-=======
-    agent any  // Set to 'none' since you'll be specifying agents in each stage
-
-    environment {
-        DOCKERHUB_CREDENTIALS = credentials('beautykemefa-dockerhub')
-        TOMCAT_SERVER_LABEL = 'tomcat'
-        CONTAINER_NAME = 'javaapp'
-        DOCKER_IMAGE_NAME = 'beautykemefa/javawebapp'
->>>>>>> dfa0c87b7c1cec0d0cd134362ccbaeab5ec73852
     }
 
     stages {
         stage('Cleanup Container') {
             steps {
-<<<<<<< HEAD
                 sh 'docker stop javaApp || true'
                 sh 'docker rm javaApp || true'
-=======
-                git branch: 'main', url: 'https://github.com/beaustar2/Project-1.git'
->>>>>>> dfa0c87b7c1cec0d0cd134362ccbaeab5ec73852
             }
         }
 
         stage('SCM Checkout') {
-            steps {
+            steps 
                 script {
                     git credentialsId: 'git-creds', url: 'https://github.com/beaustar2/Project-1.git', branch: 'main'
                 }
