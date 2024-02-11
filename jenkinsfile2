@@ -4,17 +4,12 @@ pipeline {
     }
 
     stages {
-        stage('Cleanup Container') {
-            steps {
-                sh 'docker stop javaApp || true'
-                sh 'docker rm javaApp || true'
-            }
-        }
-
         stage('SCM Checkout') {
             steps {
                 script {
-                    git credentialsId: 'git-creds', url: 'https://github.com/beaustar2/Project-1.git', branch: 'main'
+                    checkout([$class: 'GitSCM',
+                              branches: [[name: 'main']],
+                              userRemoteConfigs: [[url: 'https://github.com/javahometech/my-app']]])
                 }
             }
         }
