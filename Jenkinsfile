@@ -30,10 +30,10 @@ pipeline {
                 echo "Deploying the application"
                 script {
                     unstash "Project-1"
-                    sh "~/apache-tomcat-7.0.94/bin/startup.sh"
+                    sh "sudo ~/apache-tomcat-7.0.94/bin/startup.sh"
                     sh "sudo rm -rf ~/apache*/webapps/*.war"
-                    sh "sudo mkdir -p /home/centos/apache-tomcat-7.0.94/webapps"
-                    sh "sudo mv target/*.war ~/apache-tomcat-7.0.94/webapps/"
+                    #sh "sudo mkdir -p /home/centos/apache*/webapps"
+                    sh "sudo mv target/*.war ~/apache*/webapps/"
                     sh "sudo systemctl daemon-reload"
                     sh "sudo ~/apache-tomcat-7.0.94/bin/startup.sh"
                 }
