@@ -26,7 +26,7 @@ pipeline {
             steps {
                 echo "Deploying the application"
                 // Define deployment steps here
-                unstash "JenkinsProject"
+                unstash "Project-1"
                 sh "~/apache-tomcat-7.0.94/bin/startup.sh"
                 sh "sudo rm -rf ~/apache*/webapps/*.war"
                 sh "sudo mv target/*.war ~/apache/webapps/"
