@@ -4,13 +4,6 @@ pipeline {
     }
 
     stages {
-        stage('Cleanup Container') {
-            steps {
-                sh 'sudo docker stop javaApp || true'
-                sh 'sudo docker rm javaApp || true'
-            }
-        }
-
         stage('SCM Checkout') {
             steps {
                 script {
@@ -31,27 +24,44 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'sudo docker build -t beautykemefa/javawebapp:1.3.5 .'
+                script {
+                    sh 'sudo docker build -t beautykemefa/javawebapp:1.3.5 .'
+                }
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                withCredentials([string(credentialsId: 'docker-pwd', variable: 'dockerHubPwd')]) {
-                    sh "sudo docker login -u beautykemefa -p ${dockerHubPwd}"
+                script {
+                    withCredentials([string(credentialsId: 'docker-pwd', variable: 'dockerHubPwd')]) {
+                        sh "sudo docker login -u beautykemefa -p ${dockerHubPwd}"
+                        sh 'sudo docker push beautykemefa/javawebapp:1.3.5'
+                    }
                 }
-                sh 'sudo docker push beautykemefa/javawebapp:1.3.5'
             }
         }
 
         stage('Run Container on Tomcat-server') {
             steps {
                 script {
+                    // Stop and remove existing container if it exists
+                    sh 'sudo docker stop javaApp || true'
+                    sh 'sudo docker rm javaApp || true'
+
+                    // Build and run the new container
                     def dockerRun = 'sudo docker run -p 8080:8080 -d --name javaApp beautykemefa/javawebapp:1.3.5'
                     sshagent(['javawebapp']) {
                         sh "ssh -o StrictHostKeyChecking=no centos@10.0.1.11 ${dockerRun}"
                     }
                 }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                sh 'sudo docker system prune -af'
             }
         }
     }
