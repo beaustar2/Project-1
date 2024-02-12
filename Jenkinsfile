@@ -17,11 +17,9 @@ pipeline {
                 script {
                     def mvnHome = tool name: 'apache-maven-3.9.5', type: 'maven'
                     def mvnCMD = "${mvnHome}/bin/mvn"
-
+                    
                     // Build and test in a single step
                     sh "${mvnCMD} clean package test"
-                    
-                    // Stash the resulting WAR file(s)
                     stash(name: "Project-1", includes: "target/*.war")
                 }
             }
@@ -32,25 +30,24 @@ pipeline {
                 label 'tomcat'
             }
             steps {
+                echo "Deploying the application"
                 script {
-                    // Define Tomcat directory and systemd service
-                    def tomcatDir = "/home/centos/apache-tomcat-7.0.94"
-                    def systemdService = "/etc/systemd/system/tomcat.service"
-
                     // Create the target directory if it doesn't exist
-                    sh "mkdir -p ${tomcatDir}/webapps/"
+                    sh "sudo mkdir -p /home/centos/apache-tomcat-7.0.94/webapps/"
 
                     // Remove existing WAR files
-                    sh "rm -rf ${tomcatDir}/webapps/*.war"
+                    sh "sudo rm -rf /home/centos/apache-tomcat-7.0.94/webapps/*.war"
 
-                    // Unstash the WAR file(s)
                     unstash "Project-1"
 
-                    // Move the WAR file(s) to the target directory
-                    sh "mv target/*.war ${tomcatDir}/webapps/"
+                    // Move the WAR file to the target directory
+                    sh "sudo mv target/*.war /home/centos/apache-tomcat-7.0.94/webapps/"
 
-                    // Reload systemd daemon and restart Tomcat
-                    sh "systemctl daemon-reload && systemctl restart tomcat"
+                    // Reload systemd daemon
+                    sh "sudo systemctl daemon-reload"
+
+                    // Restart Tomcat
+                    sh "/home/centos/apache-tomcat-7.0.94/bin/startup.sh"
                 }
             }
         }
