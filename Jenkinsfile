@@ -20,7 +20,7 @@ pipeline {
                     
                     // Build and test in a single step
                     sh "${mvnCMD} clean package test"
-                    stash(name:"Project-1", includes:"target/*.war")
+                    stash(name: "Project-1", includes: "target/*.war")
                 }
             }
         }
@@ -32,11 +32,21 @@ pipeline {
             steps {
                 echo "Deploying the application"
                 script {
-                    unstash "Project-1"
-                    sh "/home/centos/apache-tomcat-7.0.94/bin/startup.sh"
+                    // Create the target directory if it doesn't exist
+                    sh "sudo mkdir -p /home/centos/apache-tomcat-7.0.94/webapps/"
+
+                    // Remove existing WAR files
                     sh "sudo rm -rf /home/centos/apache-tomcat-7.0.94/webapps/*.war"
+
+                    unstash "Project-1"
+
+                    // Move the WAR file to the target directory
                     sh "sudo mv target/*.war /home/centos/apache-tomcat-7.0.94/webapps/"
+
+                    // Reload systemd daemon
                     sh "sudo systemctl daemon-reload"
+
+                    // Restart Tomcat
                     sh "/home/centos/apache-tomcat-7.0.94/bin/startup.sh"
                 }
             }
