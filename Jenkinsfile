@@ -80,7 +80,7 @@ pipeline {
                     def containerName = "javaApp-${env.BUILD_ID}-${new Date().format("yyyyMMdd-HHmmss")}"
 
                     sh "sudo docker stop ${containerName} || true"
-                    sh "sudo docker rm ${containerName} || true"
+                    sh "sudo docker container rm -f ${containerName} || true"
 
                     def dockerRun = "sudo docker run -p 8080:8080 -d --name ${containerName} beautykemefa/javawebapp:1.3.5"
                     sshagent(['javawebapp']) {
