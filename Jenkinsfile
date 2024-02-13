@@ -4,13 +4,6 @@ pipeline {
     }
 
     stages {
-        stage('Cleanup Container') {
-            steps {
-                sh 'docker stop javaApp || true'
-                sh 'docker rm javaApp || true'
-            }
-        }
-
         stage('SCM Checkout') {
             steps {
                 script {
@@ -45,13 +38,45 @@ pipeline {
         }
 
         stage('Run Container on Tomcat-server') {
+            agent {
+                label 'tomcat'
+            }
             steps {
                 script {
-                    def dockerRun = 'docker run -p 8080:8080 -d --name javaApp beautykemefa/javawebapp:1.3.5'
+                    def containerName = "javaApp-${env.BUILD_ID}-${new Date().format("yyyyMMdd-HHmmss")}"
+
+                    sh "sudo docker stop ${containerName} || true"
+                    sh "sudo docker container rm -f ${containerName} || true"
+
+                    def dockerRun = "sudo docker run -p 8080:8080 -d --name ${containerName} beautykemefa/javawebapp:1.3.5"
                     sshagent(['javawebapp']) {
                         sh "ssh -o StrictHostKeyChecking=no centos@10.0.1.11 ${dockerRun}"
                     }
                 }
+            }
+        }
+
+        stage('Clean Up') {
+            steps {
+                sh 'docker logout'
+                sh 'sudo docker system prune -af'
+            }
+        }
+    }
+
+    post {
+        success {
+            script {
+                mail to: "Beautypop4sure@gmail.com",
+                    subject: "Build and Deployment Successful - ${currentBuild.fullDisplayName}",
+                    body: "Congratulations! The build and deployment were successful.\n\nCheck console output at ${BUILD_URL}"
+            }
+        }
+        failure {
+            script {
+                mail to: "Beautypop4sure@gmail.com",
+                    subject: "Build and Deployment Failed - ${currentBuild.fullDisplayName}",
+                    body: "Oops! The build and deployment failed.\n\nCheck console output at ${BUILD_URL}"
             }
         }
     }
