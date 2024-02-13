@@ -82,11 +82,7 @@ pipeline {
                     sh "sudo docker stop ${containerName} || true"
                     sh "sudo docker container rm -f ${containerName} || true"
 
-<<<<<<< HEAD
                     def dockerRun = "sudo docker run -p 8080:8080 -d --name ${containerName} beautykemefa/javawebapp:1.3.5"
-=======
-                    def dockerRun = "sudo docker run -p 8080:80 -d --name ${containerName} beautykemefa/javawebapp:1.3.5"
->>>>>>> 32d5e2ab4cd8d59d96d2de3633159fa7d17eedaa
                     sshagent(['javawebapp']) {
                         sh "ssh -o StrictHostKeyChecking=no centos@18.188.155.130 ${dockerRun}"
                     }
