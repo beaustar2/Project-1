@@ -44,7 +44,8 @@ resource "aws_instance" "tomcat" {
    sudo systemctl start docker
    wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.94/bin/apache-tomcat-7.0.94.tar.gz -P /home/centos
    tar xvf /home/centos/apache-tomcat-7.0.94.tar.gz -C /home/centos
-   sudo /home/centos/apache-tomcat-7.0.94/bin/startup.sh 
+   sudo /home/centos/apache-tomcat-7.0.94/bin/startup.sh
+   sudo chown -R centos:centos /home/centos/apache-tomcat-7.0.94/webapps/
    
    EOF
   private_ip             = "10.0.1.11"
