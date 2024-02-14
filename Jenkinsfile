@@ -17,12 +17,7 @@ pipeline {
                 script {
                     def mvnHome = tool name: 'apache-maven-3.9.5', type: 'maven'
                     def mvnCMD = "${mvnHome}/bin/mvn"
-
-                    // Build and test in a single step
-                    catchError {
-                        sh "${mvnCMD} clean package test"
-                    }
-                    stash(name: "Project-1", includes: "target/*.war")
+                    sh "${mvnCMD} clean package"
                 }
             }
         }
@@ -39,7 +34,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'docker-pwd', passwordVariable: 'docker-pwd', usernameVariable: 'dockerHubPwd')]) {
-                        sh "sudo docker login -u ${dockerHubPwd} -p ${dockerHubPwd}"
+                        sh "sudo docker login -u beautykemefa -p ${dockerHubPwd}"
                         sh 'sudo docker push beautykemefa/javawebapp:1.3.5'
                     }
                 }
