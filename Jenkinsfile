@@ -37,10 +37,12 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                withCredentials([string(credentialsId: 'docker-pwd', variable: 'dockerHubPwd')]) {
-                    sh "sudo docker login -u beautykemefa -p ${dockerHubPwd}"
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'docker-pwd', passwordVariable: 'docker-pwd', usernameVariable: 'dockerHubPwd')]) {
+                        sh "sudo docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+                        sh 'sudo docker push beautykemefa/javawebapp:1.3.5'
+                    }
                 }
-                sh 'sudo docker push beautykemefa/javawebapp:1.3.5'
             }
         }
 
