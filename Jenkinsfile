@@ -78,9 +78,6 @@ pipeline {
                     body: "Oops! The build and deployment failed.\n\nCheck console output at ${BUILD_URL}"
             }
         }
-    }
-
-    post {
         always {
             script {
                 sh 'sudo docker system prune -af'
