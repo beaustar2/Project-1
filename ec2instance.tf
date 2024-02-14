@@ -7,7 +7,7 @@ resource "aws_instance" "javawebapp" {
   user_data              = <<-EOF
    #!/bin/bash
    sudo yum update -y
-   sudo yum -y install git wget maven* java-11-openjdk
+   sudo yum -y install git wget maven* java-11*
    curl -fsSL https://get.docker.com -o install-docker.sh
    sudo sh install-docker.sh
    sudo systemctl start docker
