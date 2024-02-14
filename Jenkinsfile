@@ -39,7 +39,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'docker-pwd', passwordVariable: 'docker-pwd', usernameVariable: 'dockerHubPwd')]) {
-                        sh "sudo docker login -u ${dockerHubPwd} -p ${docker-pwd}"
+                        sh "sudo docker login -u ${dockerHubPwd} -p ${dockerHubPwd}"
                         sh 'sudo docker push beautykemefa/javawebapp:1.3.5'
                     }
                 }
