@@ -47,7 +47,7 @@ pipeline {
                     sh "sudo systemctl daemon-reload"
 
                     // Restart Tomcat
-                    sh "/home/centos/apache-tomcat-7.0.94/bin/startup.sh"
+                    sh "sudo /home/centos/apache-tomcat-7.0.94/bin/startup.sh"
                 }
             }
         }
