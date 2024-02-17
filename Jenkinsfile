@@ -77,7 +77,7 @@ pipeline {
             }
             steps {
                 script {
-                    def dockerRun = "sudo docker run -p 8080:8080 -d --name ${containerName} beautykemefa/javawebapp:1.3.5"
+                    def dockerRun = "sudo docker run -p 8080:8080 -d --name javaapp beautykemefa/javawebapp:1.3.5"
                     sshagent(['node-cred']) {
                         sh "ssh -o StrictHostKeyChecking=no centos@10.0.1.11 ${dockerRun}"
                     }
@@ -108,9 +108,6 @@ pipeline {
                     body: "Oops! The build and deployment failed.\n\nCheck console output at ${BUILD_URL}"
             }
         }
-    }
-
-    post {
         always {
             script {
                 sh 'sudo docker system prune -af'
