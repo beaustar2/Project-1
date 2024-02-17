@@ -65,24 +65,24 @@ pipeline {
         }
     }
 
-    post {
+       post {
         success {
             script {
                 mail to: "Beautypop4sure@gmail.com",
                     subject: "Build and Deployment Successful - ${currentBuild.fullDisplayName}",
-                    body: "Congratulations! The build and deployment were successful.\n\nCheck console output at ${BUILD_URL}"
+                    body: "Congratulations! The build and deployment were successful.\n\nCheck console output at ${env.BUILD_URL}"
             }
         }
         failure {
             script {
                 mail to: "Beautypop4sure@gmail.com",
                     subject: "Build and Deployment Failed - ${currentBuild.fullDisplayName}",
-                    body: "Oops! The build and deployment failed.\n\nCheck console output at ${BUILD_URL}"
+                    body: "Oops! The build and deployment failed.\n\nCheck console output at ${env.BUILD_URL}"
             }
         }
         always {
             script {
-                sh 'sudo docker system prune -af'
+                sh 'docker system prune -af'
             }
         }
     }
