@@ -30,7 +30,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t beautykemefa/javawebapp:1.3.5 .'
+                    sh 'sudo docker build -t beautykemefa/javawebapp:1.3.5 .'
                 }
             }
         }
@@ -39,9 +39,9 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'docker-pwd', variable: 'dockerHubPwd')]) {
-                        sh "docker login -u beautykemefa -p ${dockerHubPwd}"
+                        sh "sudo docker login -u beautykemefa -p ${dockerHubPwd}"
                     }
-                    sh 'docker push beautykemefa/javawebapp:1.3.5'
+                    sh 'sudo docker push beautykemefa/javawebapp:1.3.5'
                 }
             }
         }
@@ -49,7 +49,7 @@ pipeline {
         stage('Run Container on Tomcat-server') {
             steps {
                 script {
-                    def dockerRun = 'docker run -p 8080:8080 -d --name javaApp beautykemefa/javawebapp:1.3.5'
+                    def dockerRun = 'sudo docker run -p 8080:8080 -d --name javaApp beautykemefa/javawebapp:1.3.5'
                     sshagent(['javawebapp']) {
                         sh "ssh -o StrictHostKeyChecking=no centos@10.0.1.20 ${dockerRun}"
                     }
@@ -59,8 +59,8 @@ pipeline {
 
         stage('Clean Up') {
             steps {
-                sh 'docker logout'
-                sh 'docker system prune -af'
+                sh 'sudo docker logout'
+                sh 'sudo docker system prune -af'
             }
         }
     }
@@ -82,7 +82,7 @@ pipeline {
         }
         always {
             script {
-                sh 'docker system prune -af'
+                sh 'sudo docker system prune -af'
             }
         }
     }
