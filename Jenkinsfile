@@ -49,7 +49,7 @@ pipeline {
         stage('Run Container on Tomcat-server') {
             steps {
                 script {
-                    def dockerRun = 'sudo docker run -p 8080:8080 -d --name javaApp beautykemefa/javawebapp:1.3.5'
+                    def dockerRun = 'sudo docker run -p 8081:8080 -d --name javaApp beautykemefa/javawebapp:1.3.5'
                     sshagent(['javawebapp']) {
                         sh "ssh -o StrictHostKeyChecking=no centos@10.0.1.20 ${dockerRun}"
                     }
