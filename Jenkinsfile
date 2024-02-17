@@ -17,7 +17,12 @@ pipeline {
                 script {
                     def mvnHome = tool name: 'apache-maven-3.9.5', type: 'maven'
                     def mvnCMD = "${mvnHome}/bin/mvn"
-                    sh "${mvnCMD} clean package"
+
+                    // Build and test in a single step
+                    catchError {
+                        sh "${mvnCMD} clean package test"
+                    }
+                    stash(name: "Project-1", includes: "target/*.war")
                 }
             }
         }
@@ -32,12 +37,10 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'docker-pwd', passwordVariable: 'docker-pwd', usernameVariable: 'dockerHubPwd')]) {
-                        sh "sudo docker login -u beautykemefa -p ${dockerHubPwd}"
-                        sh 'sudo docker push beautykemefa/javawebapp:1.3.5'
-                    }
+                withCredentials([string(credentialsId: 'docker-pwd', variable: 'dockerHubPwd')]) {
+                    sh "sudo docker login -u beautykemefa -p ${dockerHubPwd}"
                 }
+                sh 'sudo docker push beautykemefa/javawebapp:1.3.5'
             }
         }
 
@@ -45,8 +48,8 @@ pipeline {
             steps {
                 script {
                     def dockerRun = 'sudo docker run -p 8080:8080 -d --name javaApp beautykemefa/javawebapp:1.3.5'
-                    sshagent(['nodes']) {
-                        sh "ssh -o StrictHostKeyChecking=no centos@10.0.1.11 ${dockerRun}"
+                    sshagent(['javawebapp']) {
+                        sh "ssh -o StrictHostKeyChecking=no centos@10.0.1.20 ${dockerRun}"
                     }
                 }
             }
@@ -75,6 +78,9 @@ pipeline {
                     body: "Oops! The build and deployment failed.\n\nCheck console output at ${BUILD_URL}"
             }
         }
+    }
+
+    post {
         always {
             script {
                 sh 'sudo docker system prune -af'
