@@ -97,15 +97,15 @@ pipeline {
         success {
             script {
                 mail to: "Beautypop4sure@gmail.com",
-                    subject: "Build and Deployment Successful - ${currentBuild.fullDisplayName}",
-                    body: "Congratulations! The build and deployment were successful.\n\nCheck console output at ${BUILD_URL}"
+                    subject: "Build and Deployment Successful - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: "Congratulations! The build and deployment were successful.\n\nCheck console output at ${env.BUILD_URL}"
             }
         }
         failure {
             script {
                 mail to: "Beautypop4sure@gmail.com",
-                    subject: "Build and Deployment Failed - ${currentBuild.fullDisplayName}",
-                    body: "Oops! The build and deployment failed.\n\nCheck console output at ${BUILD_URL}"
+                    subject: "Build and Deployment Failed - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: "Oops! The build and deployment failed.\n\nCheck console output at ${env.BUILD_URL}"
             }
         }
         always {
