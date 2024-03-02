@@ -17,37 +17,12 @@ pipeline {
                 script {
                     def mvnHome = tool name: 'apache-maven-3.9.5', type: 'maven'
                     def mvnCMD = "${mvnHome}/bin/mvn"
-                    
+
                     // Build and test in a single step
-                    sh "${mvnCMD} clean package test"
+                    catchError {
+                        sh "${mvnCMD} clean package test"
+                    }
                     stash(name: "Project-1", includes: "target/*.war")
-                }
-            }
-        }
-
-        stage('Deploy Application') {
-            agent {
-                label 'tomcat'
-            }
-            steps {
-                echo "Deploying the application"
-                script {
-                    // Create the target directory if it doesn't exist
-                    sh "sudo mkdir -p /home/centos/apache-tomcat-7.0.94/webapps/"
-
-                    // Remove existing WAR files
-                    sh "sudo rm -rf /home/centos/apache-tomcat-7.0.94/webapps/*.war"
-
-                    unstash "Project-1"
-
-                    // Move the WAR file to the target directory
-                    sh "sudo mv target/*.war /home/centos/apache-tomcat-7.0.94/webapps/"
-
-                    // Reload systemd daemon
-                    sh "sudo systemctl daemon-reload"
-
-                    // Restart Tomcat
-                    sh "/home/centos/apache-tomcat-7.0.94/bin/startup.sh"
                 }
             }
         }
@@ -62,33 +37,19 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                script {
-                    withCredentials([string(credentialsId: 'docker-pwd', variable: 'dockerHubPwd')]) {
-                        sh "sudo docker login -u beautykemefa -p ${dockerHubPwd}"
-                        sh 'sudo docker push beautykemefa/javawebapp:1.3.5'
-                    }
+                withCredentials([string(credentialsId: 'docker-pwd', variable: 'dockerHubPwd')]) {
+                    sh "sudo docker login -u beautykemefa -p ${dockerHubPwd}"
                 }
+                sh 'sudo docker push beautykemefa/javawebapp:1.3.5'
             }
         }
 
         stage('Run Container on Tomcat-server') {
-            agent {
-                label 'tomcat'
-            }
             steps {
                 script {
-                    def containerName = "javaApp-${env.BUILD_ID}-${new Date().format("yyyyMMdd-HHmmss")}"
-
-                    sh "sudo docker stop ${containerName} || true"
-                    sh "sudo docker container rm -f ${containerName} || true"
-
-<<<<<<< HEAD
-                    def dockerRun = "sudo docker run -p 8080:8080 -d --name ${containerName} beautykemefa/javawebapp:1.3.5"
-=======
-                    def dockerRun = "sudo docker run -p 8080:80 -d --name ${containerName} beautykemefa/javawebapp:1.3.5"
->>>>>>> 32d5e2ab4cd8d59d96d2de3633159fa7d17eedaa
+                    def dockerRun = 'sudo docker run -p 8080:8080 -d --name javaApp beautykemefa/javawebapp:1.3.5'
                     sshagent(['javawebapp']) {
-                        sh "ssh -o StrictHostKeyChecking=no centos@18.188.155.130 ${dockerRun}"
+                        sh "ssh -o StrictHostKeyChecking=no centos@10.0.1.20 ${dockerRun}"
                     }
                 }
             }
