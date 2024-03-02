@@ -8,6 +8,12 @@ resource "aws_instance" "javawebapp" {
    #!/bin/bash
    sudo yum update -y
    sudo yum -y install git wget maven* java-11*
+<<<<<<< HEAD
+=======
+   curl -fsSL https://get.docker.com -o install-docker.sh
+   sudo sh install-docker.sh
+   sudo systemctl start docker
+>>>>>>> 7a856642f43d4f2ff88dc81ff40ae310cb9f0ed3
    wget https://dlcdn.apache.org/maven/maven-3/3.9.5/binaries/apache-maven-3.9.5-bin.tar.gz
    tar -zxvf apache-maven-3.9.5-bin.tar.gz
    sudo mv apache-maven-3.9.5 /opt/

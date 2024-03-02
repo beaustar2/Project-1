@@ -27,6 +27,36 @@ pipeline {
             }
         }
 
+<<<<<<< HEAD
+=======
+        stage('Deploy Application') {
+            agent {
+                label 'tomcat'
+            }
+            steps {
+                echo "Deploying the application"
+                script {
+                    // Create the target directory if it doesn't exist
+                    sh "sudo mkdir -p /home/centos/apache-tomcat-7.0.94/webapps/"
+
+                    // Remove existing WAR files
+                    sh "sudo rm -rf /home/centos/apache-tomcat-7.0.94/webapps/*.war"
+
+                    unstash "Project-1"
+
+                    // Move the WAR file to the target directory
+                    sh "sudo mv target/*.war /home/centos/apache-tomcat-7.0.94/webapps/"
+
+                    // Reload systemd daemon
+                    sh "sudo systemctl daemon-reload"
+
+                    // Restart Tomcat
+                    sh "sudo /home/centos/apache-tomcat-7.0.94/bin/startup.sh"
+                }
+            }
+        }
+
+>>>>>>> 7a856642f43d4f2ff88dc81ff40ae310cb9f0ed3
         stage('Build Docker Image') {
             steps {
                 script {
@@ -47,9 +77,15 @@ pipeline {
         stage('Run Container on Tomcat-server') {
             steps {
                 script {
+<<<<<<< HEAD
                     def dockerRun = 'sudo docker run -p 8080:8080 -d --name javaApp beautykemefa/javawebapp:1.3.5'
                     sshagent(['javawebapp']) {
                         sh "ssh -o StrictHostKeyChecking=no centos@10.0.1.20 ${dockerRun}"
+=======
+                    def dockerRun = "sudo docker run -p 8081:8080 -d --name javaapp beautykemefa/javawebapp:1.3.5"
+                    sshagent(['node-cred']) {
+                        sh "ssh -o StrictHostKeyChecking=no centos@10.0.1.11 ${dockerRun}"
+>>>>>>> 7a856642f43d4f2ff88dc81ff40ae310cb9f0ed3
                     }
                 }
             }
@@ -57,7 +93,7 @@ pipeline {
 
         stage('Clean Up') {
             steps {
-                sh 'docker logout'
+                sh 'sudo docker logout'
                 sh 'sudo docker system prune -af'
             }
         }
@@ -67,20 +103,17 @@ pipeline {
         success {
             script {
                 mail to: "Beautypop4sure@gmail.com",
-                    subject: "Build and Deployment Successful - ${currentBuild.fullDisplayName}",
-                    body: "Congratulations! The build and deployment were successful.\n\nCheck console output at ${BUILD_URL}"
+                    subject: "Build and Deployment Successful - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: "Congratulations! The build and deployment were successful.\n\nCheck console output at ${env.BUILD_URL}"
             }
         }
         failure {
             script {
                 mail to: "Beautypop4sure@gmail.com",
-                    subject: "Build and Deployment Failed - ${currentBuild.fullDisplayName}",
-                    body: "Oops! The build and deployment failed.\n\nCheck console output at ${BUILD_URL}"
+                    subject: "Build and Deployment Failed - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: "Oops! The build and deployment failed.\n\nCheck console output at ${env.BUILD_URL}"
             }
         }
-    }
-
-    post {
         always {
             script {
                 sh 'sudo docker system prune -af'
