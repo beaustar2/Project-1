@@ -44,7 +44,7 @@ resource "aws_instance" "tomcat" {
    echo "export JAVA_HOME=/usr/lib/jvm/java-11-openjdk" >> ~/.bashrc
    curl -fsSL https://get.docker.com -o install-docker.sh
    sudo sh install-docker.sh
-   sudo systemctl start docker
+   sudo systemctl start docker 
    wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.94/bin/apache-tomcat-7.0.94.tar.gz -P /home/centos
    tar xvf /home/centos/apache-tomcat-7.0.94.tar.gz -C /home/centos
    sudo /home/centos/apache-tomcat-7.0.94/bin/startup.sh
