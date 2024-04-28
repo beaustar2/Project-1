@@ -1,0 +1,6 @@
+*.terraform/providers/registry.terraform.io/hashicorp/aws/3.76.1/windows_amd64/terraform-provider-aws_v3.76.1_x5.exe filter=lfs diff=lfs merge=lfs -text
+
+#command to resolve large file issues on github
+#git lfs install
+#git lfs track "*.terraform/providers/registry.terraform.io/hashicorp/aws/3.76.1/windows_amd64/terraform-provider-aws_v3.76.1_x5.exe"
+#git lfs migrate import --include="*.terraform/providers/registry.terraform.io/hashicorp/aws/3.76.1/windows_amd64/terraform-provider-aws_v3.76.1_x5.exe"
