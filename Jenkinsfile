@@ -7,7 +7,7 @@ pipeline {
         stage('SCM Checkout') {
             steps {
                 script {
-                    git tool: 'Default', credentialsId: 'git-cred', url: 'https://github.com/beaustar2/Project-1.git', branch: 'main'
+                    git tool: 'Default', credentialsId: 'git-cred', url: 'https://github.com/beaustar2/Project-1.git', branch: 'master'
                 }
             }
         }
